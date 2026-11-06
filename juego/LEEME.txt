@@ -1,0 +1,39 @@
+LA RUTA DEL EMPRENDEDOR
+GAES 1: Daniel Velasco y Miguel Ortiz
+
+OPCIÓN A. CADA PERSONA JUEGA EN SU CELULAR (recomendada para clase)
+Se necesita Node.js 18 o superior en el computador que hará de servidor.
+
+1. Descomprime esta carpeta en el computador.
+2. En Windows, abre iniciar.bat (o ejecuta en una terminal: node server.js).
+   Si Windows pregunta por el Firewall, permite el acceso en redes privadas.
+3. La consola muestra el enlace para los jugadores y el usuario y la contraseña
+   del administrador. La contraseña solo aparece en el primer arranque: guárdala.
+4. Muestra el enlace en pantalla. Todos deben estar en la misma red.
+5. En el computador abre http://localhost:3000 y pulsa "Administrador".
+
+Si el wifi del SENA no deja que los equipos se vean entre sí, comparte internet
+desde un celular y conecta a esa red el computador y los demás celulares.
+
+¿Perdiste la contraseña? Detén el servidor, borra datos/admin.json y vuelve a
+iniciarlo. Se generará otra. Los puntajes se conservan.
+
+OPCIÓN B. TODOS JUEGAN EN UN SOLO COMPUTADOR
+Abre juego.html con doble clic. No necesita instalar nada. La primera vez que
+pulses "Administrador" crearás el usuario y la contraseña. Los puntajes quedan
+en ese navegador.
+
+ANTES DE LA PRESENTACIÓN
+Haz una prueba con dos celulares en el lugar real y borra luego los puntajes
+de prueba desde el panel ("Borrar todo").
+
+SEGURIDAD: LO QUE PROTEGE Y LO QUE NO
+Con servidor, la contraseña se guarda derivada con scrypt, la sesión usa una
+cookie HttpOnly y el inicio de sesión limita los intentos.
+- El puntaje lo calcula el navegador y el servidor solo revisa que sea coherente.
+  Alguien con conocimientos técnicos podría enviar uno falso. Para clase basta;
+  en un producto real el servidor guardaría las respuestas y calcularía el puntaje.
+- En la red local el tráfico va por HTTP, sin cifrar. No uses una contraseña que
+  también tengas en otra cuenta.
+- En la opción B la contraseña solo evita miradas casuales en ese computador:
+  alguien con acceso al navegador puede leer los datos.

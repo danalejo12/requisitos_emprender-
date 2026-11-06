@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La Ruta del Emprendedor</title>
+<style>
+:root{
+  --pino:#0F3D2E;--pino-2:#17533F;--pino-3:#236B53;--lima:#9BE15D;--verde:#2F8F00;
+  --ambar:#F5B301;--coral:#FF8A65;--blanco:#FFFFFF;--tinta:#10261E;--gris:#55695F;--linea:#D5DFD9;--papel:#F4F7F5;
+  --titulo:"Bookman Old Style","URW Bookman","Bookman",Georgia,serif;
+  --texto:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--pino);color:var(--blanco);font:17px/1.45 var(--texto);-webkit-text-size-adjust:100%}
+button,input{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+h1,h2,h3{font-family:var(--titulo);line-height:1.15;margin:0}
+[hidden]{display:none!important}
+.vista{min-height:100dvh;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px 20px}
+.contenido{width:100%;max-width:720px;margin:0 auto;flex:1;display:flex;flex-direction:column}
+.boton{border:0;border-radius:12px;padding:15px 22px;font-weight:700;background:var(--ambar);color:var(--tinta);min-height:50px}
+.boton:hover{filter:brightness(1.06)}
+.boton:disabled{opacity:.6;cursor:wait}
+.boton.secundario{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+.enlace{background:none;border:0;color:inherit;text-decoration:underline;padding:10px 4px;min-height:44px}
+.aviso{font-size:14px;color:#CFE3D8}
+.error{color:#FFC4B2;font-weight:600;min-height:1.4em;margin:8px 0 0}
+
+/* Inicio */
+#inicio .contenido{justify-content:center;gap:22px}
+#inicio h1{font-size:clamp(42px,11vw,76px);letter-spacing:-.02em}
+#inicio .bajada{font-size:clamp(18px,4.2vw,22px);max-width:32em;margin:0;color:#DDEBE3}
+.campo label{display:block;font-weight:600;margin-bottom:6px}
+.campo input{width:100%;padding:14px;border-radius:10px;border:2px solid transparent;background:#fff;color:var(--tinta);min-height:50px}
+#form-inicio{display:grid;gap:14px;max-width:440px}
+.creditos{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:#CFE3D8;margin-top:auto;padding-top:24px;max-width:720px;width:100%;align-self:center}
+
+/* Ruta */
+.ruta{width:100%;height:auto;display:block;overflow:visible}
+.ruta .base{fill:none;stroke:var(--pino-3);stroke-width:12;stroke-linecap:round}
+.ruta .avance{fill:none;stroke:var(--lima);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
+.ruta .estacion{fill:var(--pino);stroke:#BCD3C7;stroke-width:4}
+.ruta .estacion.bien{fill:var(--lima);stroke:var(--lima)}
+.ruta .estacion.mal{fill:var(--pino);stroke:var(--ambar);stroke-width:7}
+.ruta .marcador{fill:var(--ambar);stroke:var(--blanco);stroke-width:5;transition:transform .7s cubic-bezier(.4,0,.2,1)}
+
+/* Pregunta */
+.barra-juego{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-weight:600;margin-top:8px}
+.barra-juego b{font-size:22px;font-family:var(--titulo)}
+.tiempo{height:10px;background:var(--pino-3);border-radius:6px;overflow:hidden;margin:12px 0 18px}
+.tiempo i{display:block;height:100%;width:100%;background:var(--lima);transform-origin:left}
+.tiempo.poco i{background:var(--coral)}
+#pregunta h2{font-size:clamp(23px,5.4vw,32px);margin-bottom:18px}
+.opciones{display:grid;gap:10px}
+.opcion{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:var(--blanco);color:var(--tinta);border:3px solid transparent;border-radius:12px;padding:13px 14px;min-height:58px;font-weight:600}
+.opcion:hover:not(:disabled){background:#E8F6DB}
+.opcion .letra{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pino);color:#fff;display:grid;place-items:center;font-size:14px}
+.opcion:disabled{cursor:default;opacity:.62}
+.opcion.correcta{opacity:1;background:#E3F7CE;border-color:var(--verde)}
+.opcion.elegida{opacity:1;border-color:#C2410C;background:#FFE7DE}
+.retro{margin-top:16px;background:var(--pino-2);border-radius:12px;padding:14px 16px}
+.retro strong{display:block;font-family:var(--titulo);font-size:20px;margin-bottom:4px}
+.retro p{margin:0 0 12px}
+.retro .boton{width:100%}
+
+/* Resultado */
+#resultado .contenido{gap:18px}
+#resultado h1{font-size:clamp(30px,7vw,46px)}
+.total{font-family:var(--titulo);font-size:clamp(64px,19vw,112px);line-height:1;color:var(--lima);margin:4px 0 0}
+.total small{display:block;font:600 17px var(--texto);color:#fff;margin-top:6px}
+.datos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0}
+.datos div{background:var(--pino-2);border-radius:10px;padding:10px}
+.datos dt{font-size:13px;color:#CFE3D8}
+.datos dd{margin:0;font-weight:700;font-size:21px}
+.ranking{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px}
+.ranking li{display:grid;grid-template-columns:30px 1fr auto;gap:8px;padding:9px 12px;border-radius:8px;background:var(--pino-2)}
+.ranking li.yo{background:var(--ambar);color:var(--tinta);font-weight:700}
+.ranking .nombre{overflow-wrap:anywhere}
+.acciones{display:flex;gap:10px;flex-wrap:wrap}
+.acciones .boton{flex:1 1 160px}
+#confeti{position:fixed;inset:0;pointer-events:none;width:100%;height:100%}
+
+/* Administrador */
+#admin{background:var(--papel);color:var(--tinta);min-height:100dvh}
+.admin-wrap{max-width:1040px;margin:0 auto;padding:20px 16px 48px}
+.admin-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.admin-top h1{font-size:clamp(26px,5vw,36px)}
+.tarjeta{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:16px;margin-bottom:16px}
+#login-admin{max-width:420px;margin:8vh auto 0}
+#login-admin h1{font-size:30px;margin-bottom:6px}
+#login-admin form{display:grid;gap:14px;margin-top:16px}
+#login-admin input{border:2px solid var(--linea)}
+#login-admin .boton,.admin-wrap .boton{background:var(--pino);color:#fff;white-space:nowrap}
+.admin-wrap .boton.secundario{background:transparent;color:var(--pino)}
+.admin-wrap .boton.peligro{background:#B3261E;color:#fff}
+.admin-wrap .aviso{color:var(--gris)}
+.cifras{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.cifras div{background:var(--pino);color:#fff;border-radius:12px;padding:12px 14px}
+.cifras b{display:block;font:700 30px var(--titulo)}
+.cifras span{font-size:14px;color:#DDEBE3}
+.herramientas{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.herramientas input[type=search]{flex:1 1 200px;padding:11px;border-radius:10px;border:2px solid var(--linea);min-height:46px}
+.herramientas label{display:flex;gap:6px;align-items:center;font-size:15px}
+.herramientas .boton{padding:10px 16px;min-height:46px}
+.tabla-caja{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:660px}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--linea);white-space:nowrap}
+th{font-size:13px;color:var(--gris)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.nom{white-space:normal;overflow-wrap:anywhere;font-weight:600;min-width:140px}
+.borrar{background:none;border:0;color:#B3261E;text-decoration:underline;padding:6px;min-height:36px}
+.vacio{padding:26px 8px;color:var(--gris);text-align:center}
+.enlaces{margin:6px 0 0;font:700 clamp(18px,3.4vw,24px) var(--texto);overflow-wrap:anywhere}
+.preguntas-stat{display:grid;gap:9px;margin-top:12px}
+.preguntas-stat .fila{display:grid;grid-template-columns:minmax(0,1fr) 62px;gap:3px 10px;font-size:15px}
+.preguntas-stat .pista{grid-column:1/-1;height:9px;background:#E3EAE6;border-radius:5px;overflow:hidden}
+.preguntas-stat .pista i{display:block;height:100%;background:var(--verde)}
+.preguntas-stat .pct{white-space:nowrap;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.confirmar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#FDECEA;border-radius:10px;padding:10px 12px;margin-bottom:12px}
+h2.seccion{font-size:21px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<section id="inicio" class="vista">
+  <div class="contenido">
+    <h1>La Ruta del Emprendedor</h1>
+    <p class="bajada">Diez preguntas separan una idea de una empresa formal. Responde bien y rápido para llegar con el mayor puntaje.</p>
+    <form id="form-inicio" novalidate>
+      <div class="campo">
+        <label for="nombre">Tu nombre</label>
+        <input id="nombre" maxlength="40" autocomplete="name" required>
+      </div>
+      <button class="boton" type="submit">Empezar la ruta</button>
+      <p class="error" id="error-inicio" role="alert"></p>
+    </form>
+    <p class="aviso" id="aviso-modo" hidden></p>
+    <div class="creditos">
+      <span>GAES 1: Daniel Velasco y Miguel Ortiz</span>
+      <button class="enlace" type="button" id="abrir-admin">Administrador</button>
+    </div>
+  </div>
+</section>
+
+<section id="pregunta" class="vista" hidden>
+  <div class="contenido">
+    <svg class="ruta" id="ruta" viewBox="0 0 1000 130" role="img" aria-label="Avance por la ruta"></svg>
+    <div class="barra-juego">
+      <span id="contador"></span>
+      <span><b id="puntos-juego">0</b> puntos</span>
+    </div>
+    <div class="tiempo" id="tiempo" role="timer" aria-label="Tiempo restante"><i id="tiempo-barra"></i></div>
+    <h2 id="texto-pregunta"></h2>
+    <div class="opciones" id="opciones"></div>
+    <div class="retro" id="retro" hidden aria-live="polite">
+      <strong id="retro-titulo"></strong>
+      <p id="retro-texto"></p>
+      <button class="boton" id="siguiente" type="button"></button>
+    </div>
+  </div>
+</section>
+
+<section id="resultado" class="vista" hidden>
+  <div class="contenido">
+    <div>
+      <h1 id="res-titulo"></h1>
+      <p class="total"><span id="res-total">0</span><small>puntos</small></p>
+    </div>
+    <dl class="datos">
+      <div><dt>Aciertos</dt><dd id="res-aciertos"></dd></div>
+      <div><dt>Mejor racha</dt><dd id="res-racha"></dd></div>
+      <div><dt>Tiempo medio</dt><dd id="res-tiempo"></dd></div>
+    </dl>
+    <p class="error" id="res-error" role="alert" hidden></p>
+    <button class="boton" id="res-reintentar" type="button" hidden>Guardar de nuevo</button>
+    <div>
+      <h2 id="res-puesto" style="font-size:24px"></h2>
+      <ol class="ranking" id="res-ranking"></ol>
+    </div>
+    <div class="acciones">
+      <button class="boton" id="jugar-otra" type="button">Volver al inicio</button>
+    </div>
+  </div>
+</section>
+
+<section id="admin" hidden>
+  <div class="admin-wrap">
+    <div id="login-admin" class="tarjeta">
+      <h1 id="login-titulo">Administrador</h1>
+      <p class="aviso" id="login-texto"></p>
+      <form id="form-login" novalidate>
+        <div class="campo">
+          <label for="usuario">Usuario</label>
+          <input id="usuario" autocomplete="username" required>
+        </div>
+        <div class="campo">
+          <label for="clave">Contraseña</label>
+          <input id="clave" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="boton" type="submit" id="boton-login">Iniciar sesión</button>
+        <p class="error" id="error-login" role="alert" style="color:#B3261E"></p>
+      </form>
+      <button class="enlace" type="button" id="volver-juego">Volver al juego</button>
+    </div>
+
+    <div id="panel" hidden>
+      <div class="admin-top">
+        <h1>Puntajes de la ruta</h1>
+        <div class="acciones">
+          <button class="boton secundario" type="button" id="exportar">Descargar CSV</button>
+          <button class="boton secundario" type="button" id="salir">Cerrar sesión</button>
+        </div>
+      </div>
+      <div class="tarjeta" id="caja-enlaces" hidden>
+        <strong>Enlace para los jugadores</strong>
+        <p class="aviso" style="margin:2px 0 0">Deben estar conectados a la misma red que este equipo.</p>
+        <p class="enlaces" id="enlaces"></p>
+      </div>
+      <p class="tarjeta aviso" id="aviso-local" hidden>Este panel muestra los puntajes jugados en este navegador. Para reunir los de varios celulares, abre el juego con el servidor.</p>
+      <div class="cifras">
+        <div><b id="c-personas">0</b><span>Participantes</span></div>
+        <div><b id="c-intentos">0</b><span>Intentos</span></div>
+        <div><b id="c-promedio">0</b><span>Puntaje promedio</span></div>
+        <div><b id="c-mejor">0</b><span>Mejor puntaje</span></div>
+      </div>
+      <div class="tarjeta">
+        <div class="herramientas">
+          <input type="search" id="buscar" placeholder="Buscar por nombre" aria-label="Buscar por nombre">
+          <label><input type="checkbox" id="solo-mejor"> Solo el mejor intento</label>
+          <button class="boton peligro" type="button" id="vaciar">Borrar todo</button>
+        </div>
+        <div class="confirmar" id="confirmar" hidden>
+          <span>¿Borrar todos los puntajes? Esta acción no se puede deshacer.</span>
+          <button class="boton peligro" type="button" id="confirmar-si">Sí, borrar todo</button>
+          <button class="boton secundario" type="button" id="confirmar-no">Cancelar</button>
+        </div>
+        <div class="tabla-caja">
+          <table>
+            <thead><tr><th class="num">Puesto</th><th>Nombre</th><th class="num">Puntaje</th><th class="num">Aciertos</th><th class="num">Mejor racha</th><th class="num">Tiempo medio</th><th>Fecha</th><th></th></tr></thead>
+            <tbody id="filas"></tbody>
+          </table>
+        </div>
+        <p class="vacio" id="vacio" hidden></p>
+      </div>
+      <div class="tarjeta">
+        <h2 class="seccion">Aciertos por pregunta</h2>
+        <p class="aviso" style="margin:4px 0 0">Muestra qué temas conviene reforzar con el grupo.</p>
+        <div class="preguntas-stat" id="stat-preguntas"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<canvas id="confeti" hidden aria-hidden="true"></canvas>
+
+<script>
+'use strict';
+/* El primer elemento de "ops" es siempre la respuesta correcta; se barajan al mostrarlas. */
+const PREGUNTAS = [
+  {q:'¿Qué conviene comprobar antes de invertir en formalizar un emprendimiento?',
+   ops:['Que clientes reales tienen el problema y pagarían por la solución','Que el logo y el nombre gustan entre amigos','Que ya existe una oficina disponible','Que la idea no tiene ningún competidor'],
+   exp:'Validar primero con clientes reales evita formalizar una idea que nadie comprará.'},
+  {q:'¿Qué indica el punto de equilibrio?',
+   ops:['El nivel de ventas con el que los ingresos cubren todos los costos','La ganancia máxima que puede alcanzar la empresa','El capital mínimo exigido por la ley','El valor del negocio frente a la competencia'],
+   exp:'Debajo de ese nivel hay pérdida; por encima empieza la utilidad.'},
+  {q:'En una S.A.S., ¿hasta dónde responden en general los accionistas?',
+   ops:['Hasta el monto de sus aportes','Con todo su patrimonio personal','Solo si hay más de cinco socios','Por el total de deudas de la empresa, sin límite'],
+   exp:'Esa separación patrimonial es una razón frecuente para elegir la S.A.S. (Ley 1258 de 2008).'},
+  {q:'¿Ante qué entidad se realiza la matrícula mercantil?',
+   ops:['La Cámara de Comercio','La DIAN','El SENA','La Superintendencia Financiera'],
+   exp:'La matrícula se hace en la Cámara de Comercio del domicilio del negocio.'},
+  {q:'¿Qué entidad administra el RUT?',
+   ops:['La DIAN','La Cámara de Comercio','La alcaldía local','El Ministerio de Trabajo'],
+   exp:'El Registro Único Tributario identifica al contribuyente y sus responsabilidades ante la DIAN.'},
+  {q:'En Bogotá, ¿qué registro identifica al contribuyente ante la Secretaría Distrital de Hacienda?',
+   ops:['El RIT','El RUES','El NIT','La matrícula profesional'],
+   exp:'El Registro de Información Tributaria (RIT) es el registro distrital de Bogotá.'},
+  {q:'¿Hasta qué edad aplica el beneficio de la Ley 1780 de 2016 sobre la matrícula mercantil?',
+   ops:['Hasta 35 años','Hasta 25 años','Hasta 28 años','Hasta 40 años'],
+   exp:'Exime a pequeñas empresas jóvenes de la matrícula y de la renovación del primer año, si cumplen las condiciones.'},
+  {q:'En el Fondo Emprender, ¿qué parte mínima del plan de negocio debe aportar el emprendedor?',
+   ops:['El 10 %','El 25 %','El 50 %','No debe aportar nada'],
+   exp:'El fondo financia hasta el 90 %; confirma siempre los términos de cada convocatoria.'},
+  {q:'¿Cuándo se condona el capital semilla del Fondo Emprender?',
+   ops:['Cuando se cumplen los indicadores del plan de negocio','Cuando la empresa cumple un año, sin más condiciones','Cuando el emprendedor termina su formación','Cuando la empresa abre una cuenta bancaria'],
+   exp:'Pesan sobre todo los empleos formales prometidos; si no se cumplen, hay que reembolsar.'},
+  {q:'Si tu negocio recolecta datos de clientes, ¿qué ley debes cumplir?',
+   ops:['La Ley 1581 de 2012','La Ley 1258 de 2008','La Ley 1780 de 2016','La Ley 1014 de 2006'],
+   exp:'La Ley 1581 regula la protección de datos personales en Colombia.'},
+];
+const SEGUNDOS = 20;
+const LIMITE_POCO = 5;
+
+const $ = (id) => document.getElementById(id);
+const VISTAS = ['inicio','pregunta','resultado','admin'];
+function mostrar(vista){
+  VISTAS.forEach((v) => { $(v).hidden = v !== vista; });
+  window.scrollTo(0,0);
+}
+function el(tag, props = {}, ...hijos){
+  const n = document.createElement(tag);
+  Object.assign(n, props);
+  hijos.forEach((h) => n.append(h));
+  return n;
+}
+function barajar(lista){
+  const a = [...lista];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+const formatoNum = (n) => Number(n).toLocaleString('es-CO');
+const formatoSeg = (ms) => `${(ms / 1000).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})} s`;
+const normalizar = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+function ordenar(lista){
+  return [...lista].sort((a,b) => b.puntaje - a.puntaje || a.tiempoPromedioMs - b.tiempoPromedioMs);
+}
+function mejorPorPersona(lista){
+  const mejores = new Map();
+  ordenar(lista).forEach((r) => {
+    const k = normalizar(r.nombre);
+    if (!mejores.has(k)) mejores.set(k, r);
+  });
+  return [...mejores.values()];
+}
+
+/* ---------- Dos formas de guardar, una sola interfaz ----------
+   Con servidor, los puntajes de todos los celulares llegan a un punto central.
+   Sin servidor (archivo abierto con doble clic), quedan en este navegador. */
+const almacen = {
+  leer(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  escribir(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+};
+const CLAVE_PUNTAJES = 'ruta_puntajes', CLAVE_ADMIN = 'ruta_admin';
+
+async function pedir(ruta, opciones = {}){
+  const r = await fetch(ruta, {
+    credentials:'same-origin',
+    headers: opciones.body ? {'Content-Type':'application/json'} : {},
+    ...opciones,
+  });
+  const datos = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const e = new Error(datos.error || 'No se pudo conectar con el servidor.');
+    e.estado = r.status;
+    throw e;
+  }
+  return datos;
+}
+
+const apiServidor = {
+  modo:'servidor',
+  ranking: () => pedir('/api/ranking'),
+  guardar: (r) => pedir('/api/puntajes',{method:'POST',body:JSON.stringify(r)}),
+  necesitaCrearClave: () => false,
+  login: (usuario, clave) => pedir('/api/login',{method:'POST',body:JSON.stringify({usuario,clave})}),
+  logout: () => pedir('/api/logout',{method:'POST'}),
+  admin: () => pedir('/api/admin/puntajes'),
+  borrar: (id) => pedir(`/api/admin/puntajes/${encodeURIComponent(id)}`,{method:'DELETE'}),
+  vaciar: () => pedir('/api/admin/puntajes',{method:'DELETE'}),
+};
+
+async function derivarClave(clave, salHex){
+  if (!window.crypto || !crypto.subtle) throw new Error('Este navegador no permite crear la contraseña aquí. Abre el juego con el servidor.');
+  const sal = Uint8Array.from(salHex.match(/../g).map((h) => parseInt(h,16)));
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(clave), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:sal,iterations:150000}, base, 256);
+  return [...new Uint8Array(bits)].map((b) => b.toString(16).padStart(2,'0')).join('');
+}
+let sesionLocal = false;
+const apiLocal = {
+  modo:'local',
+  ranking: async () => almacen.leer(CLAVE_PUNTAJES, []),
+  guardar: async (r) => {
+    const lista = almacen.leer(CLAVE_PUNTAJES, []);
+    const id = window.crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
+    lista.push({...r, id, total:PREGUNTAS.length, fecha:new Date().toISOString()});
+    if (!almacen.escribir(CLAVE_PUNTAJES, lista)) throw new Error('Este navegador no permite guardar datos.');
+    return {id};
+  },
+  necesitaCrearClave: () => !almacen.leer(CLAVE_ADMIN, null),
+  login: async (usuario, clave) => {
+    const guardado = almacen.leer(CLAVE_ADMIN, null);
+    if (!guardado) {
+      if (usuario.trim().length < 3 || clave.length < 6) throw new Error('Usa un usuario de 3 letras o más y una contraseña de 6 caracteres o más.');
+      const sal = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2,'0')).join('');
+      const hash = await derivarClave(clave, sal);
+      almacen.escribir(CLAVE_ADMIN, {usuario:usuario.trim(), sal, hash});
+    } else {
+      const hash = await derivarClave(clave, guardado.sal);
+      if (usuario.trim() !== guardado.usuario || hash !== guardado.hash) throw new Error('Usuario o contraseña incorrectos.');
+    }
+    sesionLocal = true;
+    return {ok:true};
+  },
+  logout: async () => { sesionLocal = false; return {ok:true}; },
+  admin: async () => {
+    if (!sesionLocal) { const e = new Error('Inicia sesión para continuar.'); e.estado = 401; throw e; }
+    return {puntajes: almacen.leer(CLAVE_PUNTAJES, []), enlaces:[]};
+  },
+  borrar: async (id) => { almacen.escribir(CLAVE_PUNTAJES, almacen.leer(CLAVE_PUNTAJES, []).filter((p) => p.id !== id)); },
+  vaciar: async () => { almacen.escribir(CLAVE_PUNTAJES, []); },
+};
+
+let api = apiLocal;
+async function detectarModo(){
+  if (location.protocol === 'file:') return;
+  try {
+    const estado = await pedir('/api/estado');
+    if (estado.modo === 'servidor') api = apiServidor;
+  } catch { /* sin servidor: se queda en modo local */ }
+}
+
+/* ---------- Dibujo de la ruta ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+const TRAZADO = 'M 20 65 C 120 5, 180 5, 280 65 S 440 125, 540 65 S 700 5, 800 65 S 930 110, 980 65';
+const ruta = {base:null, avance:null, marcador:null, estaciones:[], puntos:[], largo:0, tramos:[]};
+function svg(tag, attrs){
+  const n = document.createElementNS(NS, tag);
+  Object.entries(attrs).forEach(([k,v]) => n.setAttribute(k,v));
+  return n;
+}
+function dibujarRuta(){
+  const s = $('ruta');
+  s.replaceChildren();
+  ruta.base = svg('path',{d:TRAZADO,class:'base'});
+  ruta.avance = svg('path',{d:TRAZADO,class:'avance'});
+  s.append(ruta.base, ruta.avance);
+  ruta.largo = ruta.base.getTotalLength();
+  ruta.avance.style.strokeDasharray = ruta.largo;
+  ruta.avance.style.strokeDashoffset = ruta.largo;
+  ruta.estaciones = []; ruta.puntos = [];
+  PREGUNTAS.forEach((_,i) => {
+    const d = ruta.largo * (i + 1) / PREGUNTAS.length;
+    const p = ruta.base.getPointAtLength(d);
+    const c = svg('circle',{cx:p.x,cy:p.y,r:13,class:'estacion'});
+    s.append(c); ruta.estaciones.push(c); ruta.puntos.push({x:p.x,y:p.y,d});
+  });
+  const inicio = ruta.base.getPointAtLength(0);
+  ruta.puntos.unshift({x:inicio.x,y:inicio.y,d:0});
+  ruta.marcador = svg('circle',{cx:0,cy:0,r:16,class:'marcador'});
+  ruta.marcador.style.transform = `translate(${inicio.x}px,${inicio.y}px)`;
+  s.append(ruta.marcador);
+}
+function avanzarRuta(indice, acierto){
+  const p = ruta.puntos[indice + 1];
+  ruta.avance.style.strokeDashoffset = ruta.largo - p.d;
+  ruta.marcador.style.transform = `translate(${p.x}px,${p.y}px)`;
+  ruta.estaciones[indice].classList.add(acierto ? 'bien' : 'mal');
+}
+
+/* ---------- Juego ---------- */
+const partida = {nombre:'',i:0,puntos:0,racha:0,mejorRacha:0,aciertos:0,tiempos:[],detalle:[],inicioMs:0,reloj:null,cerrada:false};
+let ultimoRegistro = null, idGuardado = null;
+
+function empezar(nombre){
+  Object.assign(partida,{nombre,i:0,puntos:0,racha:0,mejorRacha:0,aciertos:0,tiempos:[],detalle:[],cerrada:false});
+  $('puntos-juego').textContent = '0';
+  mostrar('pregunta');
+  dibujarRuta();
+  mostrarPregunta();
+}
+
+function mostrarPregunta(){
+  const p = PREGUNTAS[partida.i];
+  $('contador').textContent = `Pregunta ${partida.i + 1} de ${PREGUNTAS.length}`;
+  $('texto-pregunta').textContent = p.q;
+  $('retro').hidden = true;
+  const correcta = p.ops[0];
+  const caja = $('opciones');
+  caja.replaceChildren();
+  barajar(p.ops).forEach((texto, n) => {
+    const b = el('button',{type:'button',className:'opcion'}, el('span',{className:'letra',textContent:String(n + 1)}), el('span',{textContent:texto}));
+    b.dataset.correcta = texto === correcta ? '1' : '0';
+    b.addEventListener('click',() => responder(b));
+    caja.append(b);
+  });
+  partida.cerrada = false;
+  partida.inicioMs = performance.now();
+  $('tiempo').classList.remove('poco');
+  clearInterval(partida.reloj);
+  partida.reloj = setInterval(pulsoReloj, 100);
+  pulsoReloj();
+  caja.firstElementChild.focus({preventScroll:true});
+}
+
+function pulsoReloj(){
+  const pasado = performance.now() - partida.inicioMs;
+  const resta = Math.max(0, SEGUNDOS * 1000 - pasado);
+  $('tiempo-barra').style.transform = `scaleX(${resta / (SEGUNDOS * 1000)})`;
+  $('tiempo').classList.toggle('poco', resta <= LIMITE_POCO * 1000);
+  if (resta <= 0) responder(null);
+}
+
+function responder(boton){
+  if (partida.cerrada) return;
+  partida.cerrada = true;
+  clearInterval(partida.reloj);
+  const ms = Math.min(SEGUNDOS * 1000, performance.now() - partida.inicioMs);
+  const acierto = !!boton && boton.dataset.correcta === '1';
+  let ganados = 0, bono = 0;
+  if (acierto) {
+    partida.racha += 1;
+    partida.aciertos += 1;
+    partida.mejorRacha = Math.max(partida.mejorRacha, partida.racha);
+    bono = Math.min(300, 100 * (partida.racha - 1));
+    ganados = 500 + Math.round(500 * (1 - ms / (SEGUNDOS * 1000))) + bono;
+    partida.puntos += ganados;
+  } else {
+    partida.racha = 0;
+  }
+  partida.tiempos.push(ms);
+  partida.detalle.push(acierto);
+  $('puntos-juego').textContent = formatoNum(partida.puntos);
+  [...$('opciones').children].forEach((b) => {
+    b.disabled = true;
+    if (b.dataset.correcta === '1') b.classList.add('correcta');
+    else if (b === boton) b.classList.add('elegida');
+  });
+  avanzarRuta(partida.i, acierto);
+  const titulo = acierto
+    ? `Correcto: +${formatoNum(ganados)}${bono ? ' con racha' : ''}`
+    : boton ? 'Esa no era' : 'Se acabó el tiempo';
+  $('retro-titulo').textContent = titulo;
+  $('retro-texto').textContent = PREGUNTAS[partida.i].exp;
+  const ultima = partida.i === PREGUNTAS.length - 1;
+  $('siguiente').textContent = ultima ? 'Ver mi resultado' : 'Siguiente estación';
+  $('retro').hidden = false;
+  $('siguiente').focus({preventScroll:true});
+  $('retro').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+$('siguiente').addEventListener('click',() => {
+  if (partida.i === PREGUNTAS.length - 1) { terminar(); return; }
+  partida.i += 1;
+  mostrarPregunta();
+  window.scrollTo({top:0});
+});
+
+document.addEventListener('keydown',(e) => {
+  if ($('pregunta').hidden || partida.cerrada) return;
+  const n = Number(e.key);
+  if (n >= 1 && n <= 4) $('opciones').children[n - 1]?.click();
+});
+
+async function terminar(){
+  const promedio = partida.tiempos.reduce((a,b) => a + b, 0) / partida.tiempos.length;
+  ultimoRegistro = {
+    nombre:partida.nombre, puntaje:partida.puntos, aciertos:partida.aciertos,
+    mejorRacha:partida.mejorRacha, tiempoPromedioMs:Math.round(promedio), detalle:partida.detalle,
+  };
+  idGuardado = null;
+  const a = partida.aciertos;
+  $('res-titulo').textContent = a === PREGUNTAS.length ? `${partida.nombre}, ruta perfecta`
+    : a >= 7 ? `${partida.nombre}, tu empresa va en firme`
+    : a >= 4 ? `${partida.nombre}, vas por buen camino`
+    : `${partida.nombre}, aún quedan requisitos por repasar`;
+  $('res-total').textContent = formatoNum(partida.puntos);
+  $('res-aciertos').textContent = `${a} de ${PREGUNTAS.length}`;
+  $('res-racha').textContent = String(partida.mejorRacha);
+  $('res-tiempo').textContent = formatoSeg(promedio);
+  $('res-puesto').textContent = 'Guardando tu puntaje…';
+  $('res-ranking').replaceChildren();
+  mostrar('resultado');
+  await guardarYMostrarRanking();
+}
+
+async function guardarYMostrarRanking(){
+  $('res-error').hidden = true;
+  $('res-reintentar').hidden = true;
+  try {
+    const {id} = await api.guardar(ultimoRegistro);
+    idGuardado = id;
+    await pintarRanking();
+    if (ultimoRegistro.aciertos >= 7) confeti();
+  } catch (e) {
+    $('res-puesto').textContent = '';
+    $('res-error').textContent = `Tu puntaje no se guardó: ${e.message}`;
+    $('res-error').hidden = false;
+    $('res-reintentar').hidden = false;
+  }
+}
+$('res-reintentar').addEventListener('click', guardarYMostrarRanking);
+
+async function pintarRanking(){
+  const lista = mejorPorPersona(await api.ranking());
+  const clave = normalizar(ultimoRegistro.nombre);
+  const puesto = lista.findIndex((r) => normalizar(r.nombre) === clave) + 1;
+  $('res-puesto').textContent = puesto ? `Vas en el puesto ${puesto} de ${lista.length}` : 'Tabla de posiciones';
+  const ol = $('res-ranking');
+  ol.replaceChildren();
+  const visibles = lista.slice(0,5);
+  if (puesto > 5) visibles.push(lista[puesto - 1]);
+  visibles.forEach((r) => {
+    const pos = lista.indexOf(r) + 1;
+    const li = el('li',{}, el('span',{textContent:String(pos)}), el('span',{className:'nombre',textContent:r.nombre}), el('b',{textContent:formatoNum(r.puntaje)}));
+    if (pos === puesto) li.className = 'yo';
+    ol.append(li);
+  });
+}
+
+$('jugar-otra').addEventListener('click',() => {
+  $('nombre').value = '';
+  $('error-inicio').textContent = '';
+  mostrar('inicio');
+  $('nombre').focus();
+});
+
+$('form-inicio').addEventListener('submit',(e) => {
+  e.preventDefault();
+  const nombre = $('nombre').value.replace(/\s+/g,' ').trim();
+  if (nombre.length < 2) {
+    $('error-inicio').textContent = 'Escribe tu nombre para aparecer en la tabla.';
+    $('nombre').focus();
+    return;
+  }
+  $('error-inicio').textContent = '';
+  empezar(nombre);
+});
+
+function confeti(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = $('confeti'); c.hidden = false;
+  const ctx = c.getContext('2d');
+  c.width = innerWidth; c.height = innerHeight;
+  const colores = ['#9BE15D','#F5B301','#FFFFFF','#FF8A65'];
+  const piezas = Array.from({length:110},() => ({x:Math.random()*c.width,y:-20-Math.random()*c.height*.6,t:5+Math.random()*7,v:2.2+Math.random()*3.4,o:Math.random()*6,col:colores[Math.floor(Math.random()*4)]}));
+  const fin = performance.now() + 2800;
+  (function cuadro(now){
+    ctx.clearRect(0,0,c.width,c.height);
+    piezas.forEach((p) => {
+      p.y += p.v; p.o += .08;
+      ctx.save(); ctx.translate(p.x + Math.sin(p.o)*14, p.y); ctx.rotate(p.o);
+      ctx.fillStyle = p.col; ctx.fillRect(-p.t/2,-p.t/3,p.t,p.t*.66); ctx.restore();
+    });
+    if (now < fin) requestAnimationFrame(cuadro); else { c.hidden = true; }
+  })(performance.now());
+}
+
+/* ---------- Administrador ---------- */
+let datosAdmin = [], refresco = null;
+
+function prepararLogin(){
+  const crear = api.necesitaCrearClave();
+  $('login-titulo').textContent = crear ? 'Crea el acceso de administrador' : 'Administrador';
+  $('login-texto').textContent = crear
+    ? 'Este equipo aún no tiene acceso. Elige un usuario y una contraseña; los pedirá cada vez.'
+    : 'Inicia sesión para ver los puntajes de todos los jugadores.';
+  $('boton-login').textContent = crear ? 'Crear acceso' : 'Iniciar sesión';
+  $('clave').autocomplete = crear ? 'new-password' : 'current-password';
+  $('clave').value = '';
+  $('error-login').textContent = '';
+}
+
+async function abrirAdmin(){
+  mostrar('admin');
+  document.body.style.background = 'var(--papel)';
+  try {
+    await cargarAdmin();
+    mostrarPanel();
+  } catch (e) {
+    if (e.estado !== 401) $('error-login').textContent = e.message;
+    prepararLogin();
+    $('login-admin').hidden = false;
+    $('panel').hidden = true;
+    $('usuario').focus();
+  }
+}
+
+function cerrarAdmin(){
+  clearInterval(refresco);
+  document.body.style.background = '';
+  location.hash = '';
+  mostrar('inicio');
+}
+
+function mostrarPanel(){
+  $('login-admin').hidden = true;
+  $('panel').hidden = false;
+  $('aviso-local').hidden = api.modo !== 'local';
+  clearInterval(refresco);
+  // Actualiza sola mientras la gente juega, sin perder lo que el admin está filtrando.
+  refresco = setInterval(() => { cargarAdmin().catch(manejarVencida); }, 4000);
+}
+function manejarVencida(e){
+  if (e.estado === 401) { clearInterval(refresco); abrirAdmin(); }
+}
+
+async function cargarAdmin(){
+  const {puntajes, enlaces} = await api.admin();
+  datosAdmin = puntajes;
+  if (enlaces && enlaces.length) {
+    $('caja-enlaces').hidden = false;
+    $('enlaces').textContent = enlaces.join('  o  ');
+  } else {
+    $('caja-enlaces').hidden = true;
+  }
+  pintarAdmin();
+}
+
+function pintarAdmin(){
+  const personas = mejorPorPersona(datosAdmin);
+  $('c-personas').textContent = formatoNum(personas.length);
+  $('c-intentos').textContent = formatoNum(datosAdmin.length);
+  $('c-promedio').textContent = datosAdmin.length ? formatoNum(Math.round(datosAdmin.reduce((s,r) => s + r.puntaje,0) / datosAdmin.length)) : '0';
+  $('c-mejor').textContent = datosAdmin.length ? formatoNum(Math.max(...datosAdmin.map((r) => r.puntaje))) : '0';
+
+  // El puesto se calcula sobre el mejor intento de cada persona.
+  const puestos = new Map(personas.map((r,i) => [normalizar(r.nombre), i + 1]));
+  const filtro = normalizar($('buscar').value);
+  const base = $('solo-mejor').checked ? personas : ordenar(datosAdmin);
+  const visibles = base.filter((r) => normalizar(r.nombre).includes(filtro));
+
+  const cuerpo = $('filas');
+  cuerpo.replaceChildren();
+  visibles.forEach((r) => {
+    const borrar = el('button',{type:'button',className:'borrar',textContent:'Borrar'});
+    borrar.setAttribute('aria-label',`Borrar el intento de ${r.nombre}`);
+    borrar.addEventListener('click', async () => {
+      borrar.disabled = true;
+      try { await api.borrar(r.id); await cargarAdmin(); }
+      catch (e) { manejarVencida(e); borrar.disabled = false; }
+    });
+    const tr = el('tr',{},
+      el('td',{className:'num',textContent:String(puestos.get(normalizar(r.nombre)))}),
+      el('td',{className:'nom',textContent:r.nombre}),
+      el('td',{className:'num',textContent:formatoNum(r.puntaje)}),
+      el('td',{className:'num',textContent:`${r.aciertos} de ${r.total ?? PREGUNTAS.length}`}),
+      el('td',{className:'num',textContent:String(r.mejorRacha)}),
+      el('td',{className:'num',textContent:formatoSeg(r.tiempoPromedioMs)}),
+      el('td',{textContent:new Date(r.fecha).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'})}),
+      el('td',{},borrar));
+    cuerpo.append(tr);
+  });
+  const vacio = $('vacio');
+  vacio.hidden = visibles.length > 0;
+  vacio.textContent = datosAdmin.length ? 'Ningún nombre coincide con la búsqueda.' : 'Aún no hay puntajes. Aparecerán aquí en cuanto alguien termine la ruta.';
+
+  const stat = $('stat-preguntas');
+  stat.replaceChildren();
+  PREGUNTAS.forEach((p,i) => {
+    const conDato = datosAdmin.filter((r) => Array.isArray(r.detalle));
+    const bien = conDato.filter((r) => r.detalle[i]).length;
+    const pct = conDato.length ? Math.round(100 * bien / conDato.length) : 0;
+    const barra = el('i'); barra.style.width = `${pct}%`;
+    stat.append(el('div',{className:'fila'},
+      el('span',{textContent:`${i + 1}. ${p.q}`}),
+      el('span',{className:'pct',textContent:conDato.length ? `${pct} %` : '–'}),
+      el('div',{className:'pista'},barra)));
+  });
+}
+
+$('abrir-admin').addEventListener('click',() => { location.hash = 'admin'; });
+$('volver-juego').addEventListener('click', cerrarAdmin);
+$('form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('error-login').textContent = '';
+  const usuario = $('usuario').value, clave = $('clave').value;
+  if (!usuario.trim() || !clave) { $('error-login').textContent = 'Escribe el usuario y la contraseña.'; return; }
+  const b = $('boton-login'); b.disabled = true;
+  try {
+    await api.login(usuario, clave);
+    $('clave').value = '';
+    await cargarAdmin();
+    mostrarPanel();
+  } catch (err) {
+    $('error-login').textContent = err.message;
+  } finally { b.disabled = false; }
+});
+$('salir').addEventListener('click', async () => {
+  try { await api.logout(); } catch { /* la sesión vence sola */ }
+  clearInterval(refresco);
+  datosAdmin = [];
+  $('confirmar').hidden = true;
+  $('panel').hidden = true;
+  prepararLogin();
+  $('login-admin').hidden = false;
+});
+$('buscar').addEventListener('input', pintarAdmin);
+$('solo-mejor').addEventListener('change', pintarAdmin);
+$('vaciar').addEventListener('click',() => { $('confirmar').hidden = false; $('confirmar-no').focus(); });
+$('confirmar-no').addEventListener('click',() => { $('confirmar').hidden = true; });
+$('confirmar-si').addEventListener('click', async () => {
+  try { await api.vaciar(); $('confirmar').hidden = true; await cargarAdmin(); }
+  catch (e) { manejarVencida(e); }
+});
+$('exportar').addEventListener('click',() => {
+  // Evita que Excel interprete como fórmula un nombre que empiece por = + - @
+  const celda = (v) => {
+    let t = String(v);
+    if (/^[=+\-@\t\r]/.test(t)) t = `'${t}`;
+    return `"${t.replace(/"/g,'""')}"`;
+  };
+  const filas = [['Nombre','Puntaje','Aciertos','Total','Mejor racha','Tiempo medio (s)','Fecha']];
+  ordenar(datosAdmin).forEach((r) => filas.push([r.nombre,r.puntaje,r.aciertos,r.total ?? PREGUNTAS.length,r.mejorRacha,(r.tiempoPromedioMs / 1000).toFixed(1).replace('.',','),new Date(r.fecha).toLocaleString('es-CO')]));
+  // Separador ";" y BOM: así Excel en español lo abre en columnas y con tildes correctas.
+  const csv = '﻿' + filas.map((f) => f.map(celda).join(';')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a = el('a',{href:url,download:'puntajes-ruta-emprendedor.csv'});
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+});
+
+function enrutar(){
+  if (location.hash === '#admin') abrirAdmin();
+  else if (!$('admin').hidden) cerrarAdmin();
+}
+window.addEventListener('hashchange', enrutar);
+
+(async function iniciar(){
+  await detectarModo();
+  if (api.modo === 'local') {
+    const aviso = $('aviso-modo');
+    aviso.textContent = 'Modo de un solo equipo: los puntajes se guardan en este navegador.';
+    aviso.hidden = false;
+  }
+  enrutar();
+})();
+</script>
+</body>
+</html>

@@ -20,6 +20,8 @@ En Windows también se puede abrir `iniciar.bat`. La consola muestra el enlace p
 
 Si todos juegan en un solo computador, basta con abrir `juego/juego.html` con doble clic.
 
+Para tener un enlace público se puede desplegar en Render con el archivo `render.yaml`. Render pedirá definir `ADMIN_PASSWORD`, y el usuario será `admin`. En el plan gratuito los puntajes pueden perderse si el servicio se reinicia o se suspende, así que conviene descargar el CSV al terminar.
+
 Las instrucciones completas y los límites de seguridad están en `juego/LEEME.txt`.
 
 ## Datos locales

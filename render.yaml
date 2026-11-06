@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ruta-del-emprendedor
+    runtime: node
+    plan: free
+    rootDir: juego
+    buildCommand: echo "Sin dependencias que instalar"
+    startCommand: node server.js
+    healthCheckPath: /api/estado
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: ADMIN_PASSWORD
+        sync: false

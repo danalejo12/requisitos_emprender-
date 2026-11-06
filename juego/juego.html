@@ -217,7 +217,7 @@ h2.seccion{font-size:21px}
       </div>
       <div class="tarjeta" id="caja-enlaces" hidden>
         <strong>Enlace para los jugadores</strong>
-        <p class="aviso" style="margin:2px 0 0">Deben estar conectados a la misma red que este equipo.</p>
+        <p class="aviso" id="nota-enlaces" style="margin:2px 0 0"></p>
         <p class="enlaces" id="enlaces"></p>
       </div>
       <p class="tarjeta aviso" id="aviso-local" hidden>Este panel muestra los puntajes jugados en este navegador. Para reunir los de varios celulares, abre el juego con el servidor.</p>
@@ -693,11 +693,14 @@ function manejarVencida(e){
 }
 
 async function cargarAdmin(){
-  const {puntajes, enlaces} = await api.admin();
+  const {puntajes, enlaces, enlacePublico} = await api.admin();
   datosAdmin = puntajes;
   if (enlaces && enlaces.length) {
     $('caja-enlaces').hidden = false;
     $('enlaces').textContent = enlaces.join('  o  ');
+    $('nota-enlaces').textContent = enlacePublico
+      ? 'Funciona desde cualquier red con internet.'
+      : 'Deben estar conectados a la misma red que este equipo.';
   } else {
     $('caja-enlaces').hidden = true;
   }

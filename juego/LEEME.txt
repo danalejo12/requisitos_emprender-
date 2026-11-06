@@ -23,6 +23,13 @@ Abre juego.html con doble clic. No necesita instalar nada. La primera vez que
 pulses "Administrador" crearás el usuario y la contraseña. Los puntajes quedan
 en ese navegador.
 
+OPCIÓN C. ENLACE PÚBLICO CON RENDER
+Permite jugar desde cualquier red. Usa el archivo render.yaml del repositorio.
+Render pedirá ADMIN_PASSWORD: esa será la contraseña de administrador y el
+usuario será admin.
+En el plan gratuito el servicio puede suspenderse por inactividad y su disco no
+es permanente: los puntajes pueden perderse. Descarga el CSV al terminar.
+
 ANTES DE LA PRESENTACIÓN
 Haz una prueba con dos celulares en el lugar real y borra luego los puntajes
 de prueba desde el panel ("Borrar todo").

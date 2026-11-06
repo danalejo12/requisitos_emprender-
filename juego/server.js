@@ -21,6 +21,8 @@ const ARCHIVO_PUNTAJES = path.join(DIR_DATOS, 'puntajes.json');
 const ARCHIVO_ADMIN = path.join(DIR_DATOS, 'admin.json');
 const ARCHIVO_JUEGO = path.join(__dirname, 'juego.html');
 const USUARIO_ADMIN = process.env.ADMIN_USER || 'admin';
+// Dirección pública cuando se publica en internet. Render define RENDER_EXTERNAL_URL por sí solo.
+const URL_PUBLICA = (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').replace(/\/+$/, '');
 const DURACION_SESION_MS = 8 * 60 * 60 * 1000; // 8 horas
 const MAX_CUERPO_BYTES = 16 * 1024;
 const MAX_REGISTROS = 5000;
@@ -229,6 +231,7 @@ function leerCuerpo(req) {
 }
 
 function enlacesRed() {
+  if (URL_PUBLICA) return [URL_PUBLICA];
   const enlaces = [];
   for (const interfaces of Object.values(os.networkInterfaces())) {
     for (const i of interfaces || []) {
@@ -298,7 +301,8 @@ async function atender(req, res) {
   }
 
   if (metodo === 'POST' && ruta === '/api/login') {
-    if (excedeLimite(`login:${ipCliente(req)}`, 5, 60000)) {
+    // Dos límites: por IP y global. El global protege aunque alguien falsifique la IP detrás de un proxy.
+    if (excedeLimite(`login:${ipCliente(req)}`, 5, 60000) || excedeLimite('login:global', 30, 60000)) {
       responder(res, 429, { error: 'Demasiados intentos. Espera un minuto.' });
       return;
     }
@@ -326,7 +330,7 @@ async function atender(req, res) {
       return;
     }
     if (metodo === 'GET' && ruta === '/api/admin/puntajes') {
-      responder(res, 200, { puntajes, enlaces: enlacesRed() });
+      responder(res, 200, { puntajes, enlaces: enlacesRed(), enlacePublico: Boolean(URL_PUBLICA) });
       return;
     }
     if (metodo === 'DELETE' && ruta === '/api/admin/puntajes') {
@@ -360,7 +364,7 @@ const servidor = http.createServer((req, res) => {
 
 servidor.listen(PUERTO, '0.0.0.0', () => {
   console.log('\n  La Ruta del Emprendedor está en marcha\n');
-  console.log(`  En este equipo:      http://localhost:${PUERTO}`);
+  if (!URL_PUBLICA) console.log(`  En este equipo:      http://localhost:${PUERTO}`);
   for (const enlace of enlacesRed()) console.log(`  Para los jugadores:  ${enlace}`);
   console.log(`\n  Administrador:       botón "Administrador" del juego`);
   console.log(`  Usuario:             ${USUARIO_ADMIN}`);

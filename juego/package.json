@@ -1,0 +1,9 @@
+{
+  "name": "ruta-del-emprendedor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Juego de preguntas del GAES 1 con panel de administrador",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
